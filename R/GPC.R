@@ -62,6 +62,7 @@
 #' @param pval p-value; (the default value is 5e-8)
 #' @param model The regression model used either linear or binary
 #' @param Ncase The number of Case (applicable only if model is 'binary')
+#' @param meta Put 'fix' if you want to calculate power for fixed effect of meta analysis
 #'
 #' @export
 #'
