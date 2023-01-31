@@ -87,7 +87,7 @@ GPC.default <- function(x, ...) {
 #' @describeIn GPC.default The \code{default} interface.
 #' @importFrom purrr map
 #' @export
-GWASPowerCalculator <- function(OR, maf, N, pval=5e-8, model='binary', Ncase) {
+GWASPowerCalculator <- function(OR, maf, N, pval=5e-8, model='binary', Ncase, meta=NULL) {
 
   if (missing(OR)) {
     stop("The parameter 'OR' must be provided as numeric vector type")
@@ -102,7 +102,7 @@ GWASPowerCalculator <- function(OR, maf, N, pval=5e-8, model='binary', Ncase) {
     stop("The parameter 'model' must be either 'linear' or 'binary'")
   }
 
-  power <- purrr::map(OR, findPower, maf, N, pval, model = model, Ncase = Ncase)
+  power <- purrr::map(OR, findPower, maf, N, pval, model = model, Ncase = Ncase, meta = meta)
   power = do.call("cbind",power)
   colnames(power) = OR
   rownames(power) = maf
@@ -118,20 +118,37 @@ GWASPowerCalculator <- function(OR, maf, N, pval=5e-8, model='binary', Ncase) {
 #' @describeIn GPC
 #' @importFrom stats qchisq pchisq
 #' @export
-findPower <- function(OR, maf, N, pval=5e-8, model, Ncase) {
-  fmt <- sprintf("%s%df","%3.",3)
+findPower <- function(OR, maf, N, pval=5e-8, model, Ncase, meta = NULL) {
 
   beta <- log(OR)
+
   if (model == 'linear') {
+    if (is.null(meta)) {
+      if (length(N) > 1) {
+        stop("Two GWAS detected. Please put only one GWAS")
+      }
+      N.eff <- N
+    } else {
+      N.eff <- sum(N)
+    }
     sigma <- sqrt(1 - 2*maf*(1-maf)*beta^2)
-    SE <- sigma / sqrt(2*maf*(1-maf)*N)
+    SE <- sigma / sqrt(2*maf*(1-maf)*N.eff)
 
   } else if (model == 'binary') {
     if (missing(Ncase)) {
       stop("For binary power calculation, the number of cases must be provided on 'Ncase' parameter")
     }
     phi <- Ncase / N
-    SE <- 1/sqrt(2*maf*(1-maf)*N*phi*(1-phi))
+    if (is.null(meta)) {
+      if (length(N) > 1 || length(Ncase) > 1) {
+        stop("Two GWAS detected. Please put only one GWAS")
+      }
+      N.eff <- N*phi*(1-phi)
+    } else {
+      N.eff <- sum(N*phi*(1-phi))
+    }
+
+    SE <- 1/sqrt(2*maf*(1-maf)*N.eff)
   } else {
     stop("The paramter 'model' should be either 'linear' or 'binary'")
   }
@@ -141,7 +158,7 @@ findPower <- function(OR, maf, N, pval=5e-8, model, Ncase) {
   power <-  pchisq(q = q.thresh, df = 1, ncp = NCP, lower.tail = FALSE)
 
 
-  return(paste0(round(power*100,2), "%"))
+  return(paste0(format(round(power*100,2),nsmall = 2), "%"))
 }
 
 
