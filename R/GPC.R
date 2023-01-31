@@ -146,6 +146,9 @@ findPower <- function(OR, maf, N, pval=5e-8, model, Ncase, meta = NULL) {
       }
       N.eff <- N*phi*(1-phi)
     } else {
+      if (length(N) != length(Ncase)) {
+        stop("The number of study and case are not equal")
+      }
       N.eff <- sum(N*phi*(1-phi))
     }
 
