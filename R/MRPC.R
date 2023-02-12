@@ -40,7 +40,7 @@ MRPC <- function(x, ...) {
 #' @describeIn MRPC.default The \code{default} interface.
 #' @importFrom purrr map
 #' @export
-MRPowerCalculator <- function(OR, rsq, N, pval=0.05, Ncase=NULL, Ncontrol=NULL, model='binary', K=NULL) {
+MRPowerCalculator <- function(OR, rsq, N, pval=0.05, Ncase=NULL, Ncontrol=NULL, model='binary', K=1) {
 
   if (missing(OR)) {
     stop("The parameter 'OR' must be provided as numeric vector type")
@@ -57,6 +57,7 @@ MRPowerCalculator <- function(OR, rsq, N, pval=0.05, Ncase=NULL, Ncontrol=NULL, 
   f.statistics <- ((N-K-1) / K) * (rsq/(1-rsq))
 
   power <- purrr::map(OR, MRFindPower, rsq, N, pval,Ncase = Ncase, Ncontrol=Ncontrol, model = model)
+  #power <- paste0(format(round(power*100,2), nsamll=2), "%")
   power = do.call("cbind",power)
   colnames(power) = OR
   rownames(power) = rsq
@@ -88,7 +89,8 @@ MRFindPower <- function(OR, rsq, N, pval=0.05, Ncase=NULL, Ncontrol=NULL, model)
     lower.tail <- ifelse(sign(beta)==-1, FALSE, TRUE)
     power <- pnorm(sqrt(N*rsq)*beta-qnorm(1-pval/2, lower.tail = lower.tail), lower.tail = lower.tail)
   }
-  return(paste0(format(round(power*100,2),nsmall = 2), "%"))
+  return(power)
+  #return(paste0(format(round(power*100,2),nsmall = 2), "%"))
 }
 
 
