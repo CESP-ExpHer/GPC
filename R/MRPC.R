@@ -37,7 +37,7 @@ MRPC <- function(x, ...) {
 
 
 
-#' @describeIn GPC.default The \code{default} interface.
+#' @describeIn MRPC.default The \code{default} interface.
 #' @importFrom purrr map
 #' @export
 MRPowerCalculator <- function(OR, rsq, N, pval=0.05, Ncase=NULL, Ncontrol=NULL, model='binary', K=NULL) {
@@ -70,8 +70,8 @@ MRPowerCalculator <- function(OR, rsq, N, pval=0.05, Ncase=NULL, Ncontrol=NULL, 
 
 
 
-#' @describeIn GPC
-#' @importFrom stats qchisq pchisq
+#' @describeIn MRPC
+#' @importFrom stats pnorm qnorm
 #' @export
 MRFindPower <- function(OR, rsq, N, pval=0.05, Ncase=NULL, Ncontrol=NULL, model) {
   if (model == 'binary') {
