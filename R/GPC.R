@@ -107,6 +107,7 @@ GWASPowerCalculator <- function(OR, maf, N, pval=5e-8, model='binary', Ncase, me
   power = do.call("cbind",power)
   colnames(power) = OR
   rownames(power) = maf
+  attr(power, 'method') <- 'GWAS'
 
   result <- list(power = power, model = model)
   class(result) <- 'GPC'
@@ -171,6 +172,7 @@ findPower <- function(OR, maf, N, pval=5e-8, model, Ncase, meta = NULL) {
 #' @export
 print.GPC <- function(x) {
   obj <- x$power
+  method <- attributes(obj)$method
 
   result <- lineCount(obj)
   line.length <- result$line.length
@@ -183,7 +185,7 @@ print.GPC <- function(x) {
   line.length <- result$line.length
 
   cat("\n")
-  cat(centerprint(paste0("GWAS Power Calculation"), width = line.length))
+  cat(centerprint(paste0(method, " Power Calculation"), width = line.length))
   cat("\n\n")
   cat(head.line, "\n")
   cat(centerprint(paste0("Odds Ratio"), width = line.length))
@@ -215,10 +217,13 @@ print.GPC <- function(x) {
 #' @param x A matrix object
 #' @export
 lineCount <- function(x) {
+  method <- attributes(x)$method
   obj <- as.data.frame(x)
-  columnNames <- c("MAF|", colnames(obj))
+  methodName <- ifelse(method=='GWAS', 'MAF', "Rsq")
+  columnNames <- c(methodName, colnames(obj))
   columnNum <- nchar(columnNames)
   column.nchar <- c(max(nchar(rownames(obj))),unname(sapply(obj,function(x) max(nchar(x)))))
+
 
   column.length <- apply(rbind(columnNum, column.nchar), 2, max)
   line.length <- sum(column.length) + length(columnNames) - 1
