@@ -210,9 +210,17 @@ print.GPC <- function(x) {
     cat("\n")
   }
   cat(tail.line, '\n\n')
+  # if (method == 'MR') {
+  #   cat("F-statistics :", round(x$f.statistics,2))
+  # }
+
   if (method == 'MR') {
-    cat("F-statistics :", round(x$f.statistics,2))
+    cat("F-statistics :\n")
+    for (i in 1:length(rownames(res))) {
+      cat("For ", rownames(res)[i], "--->", round(x$f.statistics[i],2), "on", x$K[i], 'number of IV(s)\n')
+    }
   }
+
 }
 
 
