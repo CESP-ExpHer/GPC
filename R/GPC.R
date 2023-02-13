@@ -210,6 +210,9 @@ print.GPC <- function(x) {
     cat("\n")
   }
   cat(tail.line, '\n\n')
+  if (method == 'MR') {
+    cat("F-statistics :", round(x$f.statistics,2))
+  }
 }
 
 
@@ -265,5 +268,3 @@ space <- function(num){
   }
   return(ret)
 }
-
-

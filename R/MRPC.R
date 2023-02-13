@@ -94,5 +94,3 @@ MRFindPower <- function(OR, rsq, N, pval=0.05, Ncase=NULL, Ncontrol=NULL, model)
 }
 
 
-
-
