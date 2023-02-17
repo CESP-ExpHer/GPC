@@ -183,6 +183,7 @@ print.GPC <- function(x) {
   column.length <- result$column.length
   line.length <- result$line.length
 
+
   cat("\n")
   cat(centerprint(paste0(method, " Power Calculation"), width = line.length))
   cat("\n\n")
@@ -193,9 +194,10 @@ print.GPC <- function(x) {
 
   for (i in 1:length(columnNames)) {
     if (i == 1) {
-      cat(paste0(columnNames[i]))
+      #cat(paste0(columnNames[i]))
+      cat((centerprint(columnNames[i], width = column.length[i])))
     } else {
-      cat((centerprint(columnNames[i], width = column.length[i]+1.5)))
+      cat((centerprint(columnNames[i], width = column.length[i]+1)))
     }
   }
   cat('\n')
@@ -203,25 +205,24 @@ print.GPC <- function(x) {
 
   for (i in 1:dim(res)[1]){
     cat(paste0(rownames(res)[i]), "|", sep="")
+    #cat((centerprint(paste0(rownames(res)[i], "|"), width = column.length[1])))
     for(j in 1:length(columnNames)-1){
 
-      cat(sapply(res[i,j], centerprint, width = column.length[j] + 2))
+      cat(sapply(res[i,j], centerprint, width = column.length[j+1] + 1))
     }
     cat("\n")
   }
   cat(tail.line, '\n\n')
-  # if (method == 'MR') {
-  #   cat("F-statistics :", round(x$f.statistics,2))
-  # }
 
   if (method == 'MR') {
     cat("F-statistics :\n")
     for (i in 1:length(rownames(res))) {
-      cat("For ", rownames(res)[i], "--->", round(x$f.statistics[i],2), "on", x$K[i], 'number of IV(s)\n')
+      cat("For", rownames(res)[i], "--->", round(x$f.statistics[i],2), "on", x$K[i], 'number of IV(s)\n')
     }
   }
 
 }
+
 
 
 #' @param x A matrix object
@@ -230,8 +231,21 @@ lineCount <- function(x) {
   method <- attributes(x)$method
   obj <- as.data.frame(x)
   rowN <- rownames(obj)
+
+  reformat <- function(i) {
+    sprintf("%.5f", as.numeric(i))
+  }
+
+  rowN <- unlist(lapply(rowN, reformat))
   obj <- apply(obj, 2,function(x) paste0(format(round(x*100,2),nsmall = 2), "%"))
-  rownames(obj) <- rowN
+  if (is.character(obj) && !is.matrix(obj) && length(obj) >= 1) {
+    obj <- t(as.matrix(obj, byrow=F))
+    rownames(obj) <- rowN
+  } else if (is.matrix(obj)) {
+    rownames(obj) <- rowN
+  }
+
+
   methodName <- ifelse(method=='GWAS', 'MAF', "Rsq")
   columnNames <- c(methodName, colnames(obj))
   columnNum <- nchar(columnNames)
