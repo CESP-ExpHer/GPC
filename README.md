@@ -1,7 +1,7 @@
 ## GPC
-An R package for calculating the GWAS power based on the ddds ratio, minor allele frequency and number of sample.
+An R package for calculating the GWAS power based on the odds ratio, minor allele frequency, and number of samples.
 
-## Intallation
+## Installation
 To install directly from Github:
 ```r
 require(devtools)
@@ -20,7 +20,7 @@ help(GPC)
 ## Example
 #### 1. Linear Model
 ```r
-# If the GWAS was analyzed by linear model, give model argument as 'linear'
+# If the GWAS was analyzed by a linear model, give a model argument as 'linear'
 GPC(OR = c(1.2,1.3,1.4,1.5,1.6), maf = c(0.1, 0.2, 0.3), N = 500, model ='linear')
 ```
 
@@ -40,7 +40,7 @@ MAF|  1.2   1.3    1.4     1.5     1.6
 
 #### 2. Logistics Model
 ```r
-# If the GWAS was analyzed by logistics model, give model argument as 'binary'
+# If the GWAS was analyzed by a logistics model, give a model argument as 'binary'
 GPC(OR = c(1.2,1.3,1.4,1.5,1.6), maf = c(0.1, 0.2, 0.3), N = 1500, model ='binary', Ncase = 500)
 ```
 
